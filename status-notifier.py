@@ -21,7 +21,7 @@ ids_file = root_dir / Path("ids.txt")
 
 PING_DURATION = 1
 NOTIF_LIFETIME = 5
-ALLOW_NOTIFICATIONS = False
+ALLOW_NOTIFICATIONS = True
 
 # Make the ids file if it doesn't exist.
 if not ids_file.exists():
