@@ -19,7 +19,7 @@ online_users = []
 root_dir = Path(__file__).absolute().parents[0]
 ids_file = root_dir / Path("ids.txt")
 
-PING_DURATION = 1
+PING_DURATION = 5
 NOTIF_LIFETIME = 5
 ALLOW_NOTIFICATIONS = True
 
@@ -48,6 +48,11 @@ while True:
     for identification in ids:
         new_endpoint = endpoint.replace("ID_HERE", str(identification))
         response = requests.get(new_endpoint).content.decode("UTF-8")
+        
+        # Make sure there was a valid response
+        if not response:
+            continue
+
         accesible_data = json.loads(response)
         
         # Send a notification that this user just came online.
