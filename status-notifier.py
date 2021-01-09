@@ -18,6 +18,7 @@ ids_to_user = {}
 online_users = []
 root_dir = Path(__file__).absolute().parents[0]
 ids_file = root_dir / Path("ids.txt")
+first_execution = True
 
 PING_DURATION = 5
 NOTIF_LIFETIME = 5
@@ -42,9 +43,7 @@ for ident in ids:
 
 print(f"Monitoring IDs {ids}")
 
-while True:
-    time.sleep(PING_DURATION)
-    
+while True:    
     for identification in ids:
         new_endpoint = endpoint.replace("ID_HERE", str(identification))
         response = requests.get(new_endpoint).content.decode("UTF-8")
@@ -62,11 +61,13 @@ while True:
                 # Handle notifications.
                 if ALLOW_NOTIFICATIONS:
                     if sys.platform == "win32":
-                        notifier.show_toast(f"{ids_to_user[identification]} came online.", "This user just came online.", duration=NOTIF_LIFETIME, threaded=True)
+                        notifier.show_toast(f"{ids_to_user[identification]} is online.", "This user is online.",
+                                            duration=NOTIF_LIFETIME, threaded=not first_execution)
+                                            
                     elif sys.platform == "linux":
-                        os.system(f"notify-send {ids_to_user[identification]} came online.")
+                        os.system(f"notify-send {ids_to_user[identification]} is online.")
                 else:
-                    print("f{ids_to_user[identification]} came online.")
+                    print("f{ids_to_user[identification]} is online.")
 
                 online_users.append(identification)
   
@@ -74,11 +75,13 @@ while True:
             if identification in online_users:
                 if ALLOW_NOTIFICATIONS:
                     if sys.platform == "win32":
-                        notifier.show_toast(f"{ids_to_user[identification]} went offline", "This user just went offline.", duration=NOTIF_LIFETIME, threaded=True)
+                        notifier.show_toast(f"{ids_to_user[identification]} is offline", "This user is offline.",
+                                            duration=NOTIF_LIFETIME, threaded=not first_execution)
                     elif sys.platform == "linux":
-                        os.system(f"notify-send {ids_to_user[identification]} went offline.")
+                        os.system(f"notify-send {ids_to_user[identification]} is offline.")
                 else:
-                    print("f{ids_to_user[identification]} went offline.")
+                    print("f{ids_to_user[identification]} is offline.")
 
                 online_users.remove(identification)
 
+    time.sleep(PING_DURATION)
