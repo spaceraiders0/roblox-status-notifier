@@ -49,10 +49,10 @@ while True:
         response = requests.get(new_endpoint).content.decode("UTF-8")
         
         # Make sure there was a valid response
-        if not response:
-            continue
-
-        accesible_data = json.loads(response)
+        try:
+            accesible_data = json.loads(response)
+        except json.JSONDecodeError:
+            pass
         
         # Send a notification that this user just came online.
         # Caches their id until they go offline so we don't spam the user with toasts.
