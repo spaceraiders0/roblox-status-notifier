@@ -32,7 +32,7 @@ if not ids_file.exists():
     sys.exit()
 
 # Generate the usernames of each user based off their ID.
-ids = [int(id_number) for id_number in open("./ids.txt", "r").read().splitlines()]
+ids = [int(uid) for uid in open("./ids.txt", "r").read().splitlines()]
 
 for ident in ids:
     new_endpoint = user_endpoint.replace("ID_HERE", str(ident))
@@ -43,19 +43,20 @@ for ident in ids:
 
 print(f"Monitoring IDs {ids}")
 
-while True:    
+while True:
     for identification in ids:
         new_endpoint = endpoint.replace("ID_HERE", str(identification))
         response = requests.get(new_endpoint).content.decode("UTF-8")
-        
+
         # Make sure there was a valid response
         try:
             accesible_data = json.loads(response)
         except json.JSONDecodeError:
             pass
-        
+
         # Send a notification that this user just came online.
-        # Caches their id until they go offline so we don't spam the user with toasts.
+        # Caches their id until they go offline so we don't spam
+        # the user with toasts.
         if accesible_data["IsOnline"] is True:
             if identification not in online_users:
                 # Handle notifications.
@@ -63,14 +64,14 @@ while True:
                     if sys.platform == "win32":
                         notifier.show_toast(f"{ids_to_user[identification]} is online.", "This user is online.",
                                             duration=NOTIF_LIFETIME, threaded=not first_execution)
-                                            
+
                     elif sys.platform == "linux":
-                        os.system(f"notify-send {ids_to_user[identification]} is online.")
+                        os.system(f"notify-send '{ids_to_user[identification]} is online.'")
                 else:
                     print("f{ids_to_user[identification]} is online.")
 
                 online_users.append(identification)
-  
+
         elif accesible_data["IsOnline"] is False:
             if identification in online_users:
                 if ALLOW_NOTIFICATIONS:
@@ -78,7 +79,7 @@ while True:
                         notifier.show_toast(f"{ids_to_user[identification]} is offline", "This user is offline.",
                                             duration=NOTIF_LIFETIME, threaded=not first_execution)
                     elif sys.platform == "linux":
-                        os.system(f"notify-send {ids_to_user[identification]} is offline.")
+                        os.system(f"notify-send '{ids_to_user[identification]} is offline.'")
                 else:
                     print("f{ids_to_user[identification]} is offline.")
 
